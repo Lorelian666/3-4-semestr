@@ -1,0 +1,57 @@
+public class Helper {
+ 
+    public static void main(String[] args) {
+        Book telephonBok = new Catalog("НЛА 748/БН2-29092017/105", "Азарх А. Г.",
+                                "Справочник телефонов научныхучреждений", 1977);
+        System.out.println(telephonBok);
+    }
+ 
+}
+//####
+abstract class Book {
+    private String ISBN;
+    private String autor;
+    private String name;
+    private int madeYer;
+ 
+    public Book(String ISBN, String autor, String name, int madeYer) {
+        this.ISBN = ISBN;
+        this.autor = autor;
+        this.name = name;
+        this.madeYer = madeYer;
+    }
+ 
+    public String getISBN() {
+        return ISBN;
+    }
+ 
+    public String getAutor() {
+        return autor;
+    }
+ 
+    public String getName() {
+        return name;
+    }
+ 
+    public int getMadeYer() {
+        return madeYer;
+    }
+}
+//####
+class Catalog extends Book {
+    private String typBook = "Справочик";
+ 
+    public Catalog(String ISBN, String autor, String name, int madeYer) {
+        super(ISBN, autor, name, madeYer);
+ 
+    }
+ 
+    @Override
+    public String toString() {
+        return typBook + '\n' +
+                getName() + '\n' +
+                getAutor()+ '\n' +
+                getMadeYer()+ '\n' +
+                getISBN();
+    }
+}
