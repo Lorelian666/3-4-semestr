@@ -1,0 +1,859 @@
+#include <iostream>
+
+#include <fstream>
+
+#include <vector>
+
+#include <string>
+
+#include <iterator>
+
+#include <iomanip>
+
+#include <algorithm>
+
+
+
+#include <Windows.h>
+
+
+
+using namespace std;
+
+
+
+
+
+// Структура.
+
+struct Record
+
+{
+
+	// От кого.
+
+	string from;
+
+	// Кому.
+
+	string to;
+
+	// Дата.
+
+	string date;
+
+	// Время.
+
+	string time;
+
+	// Длительность.
+
+	int duration;
+
+};
+
+
+
+
+
+// Перегрузка оператора вывода для структуры.
+
+ostream& operator<<(ostream &os, const Record &r)
+
+{
+
+	os << r.from << ' ' << r.to << ' '
+
+		<< r.date << ' ' << r.time << ' ' << r.duration << endl;
+
+
+
+	return os;
+
+}
+
+
+
+
+
+// Перегрузка оператора ввода для структуры.
+
+istream& operator>>(istream &is, Record &r)
+
+{
+
+	is >> r.from >> r.to >> r.date >> r.time >> r.duration;
+
+
+
+	return is;
+
+}
+
+
+
+
+
+// Функция чтения вектора структур из файла.
+
+vector<Record> readFromFile(string fname)
+
+{
+
+	vector<Record> records;
+
+
+
+	try
+
+	{
+
+		ifstream ifs(fname.c_str());
+
+		if (!ifs.eof())
+
+			copy(std::istream_iterator<Record>(ifs), std::istream_iterator<Record>(), std::back_inserter(records));
+
+		else
+
+			cerr << "Файл пока пуст!\n";
+
+
+
+		ifs.close();
+
+	}
+
+	catch (int i)
+
+	{
+
+		cerr << "Exception! #" << i << endl;
+
+	}
+
+
+
+	return records;
+
+}
+
+
+
+
+
+// Функция записи вектора структур в файл.
+
+int writeToFile(vector<Record> records, string fname)
+
+{
+
+	try
+
+	{
+
+		ofstream ofs(fname.c_str());
+
+		copy(records.begin(), records.end(), ostream_iterator<Record>(ofs));
+
+		ofs.close();
+
+		return 0;
+
+	}
+
+	catch (int i)
+
+	{
+
+		cerr << "Exception! #" << i << endl;
+
+		return -1;
+
+	}
+
+}
+
+
+
+
+
+// Форматированный вывод вектора структур.
+
+int printRecords(vector<Record> records)
+
+{
+
+	cout
+
+		<< "--------------------------------------------------------------------------------------------\n"
+
+		<< setw(5) << "№" << setw(20) << "От кого"
+
+		<< setw(20) << "Кому" << setw(20) << "Дата"
+
+		<< setw(10) << "Время" << setw(15) << "Длительность\n"
+
+		<< "--------------------------------------------------------------------------------------------\n";
+
+	for (unsigned int i = 0; i < records.size(); i++)
+
+	{
+
+		Record it = records[i];
+
+
+
+		cout
+
+			<< setw(5) << i + 1 << setw(20) << it.from
+
+			<< setw(20) << it.to << setw(20) << it.date
+
+			<< setw(10) << it.time << setw(15) << it.duration
+
+			<< endl;
+
+	}
+
+
+
+	cout << "--------------------------------------------------------------------------------------------\n";
+
+
+
+	return 0;
+
+}
+
+
+
+
+
+// Функция вывода записей в интеревале дат.
+
+int printRecordsDate(vector<Record> records)
+
+{
+
+	string sdate, edate;
+
+	cout << "Начало периода: ";
+
+	cin >> sdate;
+
+	cout << "Конец периода: ";
+
+	cin >> edate;
+
+
+
+	bool flag = true;
+
+
+
+	cout
+
+		<< "--------------------------------------------------------------------------------------------\n"
+
+		<< setw(5) << "№" << setw(20) << "От кого"
+
+		<< setw(20) << "Кому" << setw(20) << "Дата"
+
+		<< setw(10) << "Время" << setw(15) << "Длительность\n"
+
+		<< "--------------------------------------------------------------------------------------------\n";
+
+	for (unsigned int i = 0; i < records.size(); i++)
+
+	{
+
+		Record it = records[i];
+
+
+
+		if (it.date >= sdate && it.date <= edate)
+
+		{
+
+			flag = false;
+
+			cout
+
+				<< setw(5) << i + 1 << setw(20) << it.from
+
+				<< setw(20) << it.to << setw(20) << it.date
+
+				<< setw(10) << it.time << setw(15) << it.duration << endl;
+
+		}
+
+	}
+
+
+
+	if (flag)
+
+		cout << "Дат за данный период нет!\n";
+
+
+
+	cout << "--------------------------------------------------------------------------------------------\n";
+
+
+
+	return 0;
+
+}
+
+
+
+
+
+// Вывод вектора структур с совпадением по полю "От кого".
+
+int printRecordsFrom(string fname)
+
+{
+
+	vector<Record> records = readFromFile(fname);
+
+
+
+	string from;
+
+	cout << "От кого: ";
+
+	cin >> from;
+
+
+
+	bool flag = true;
+
+
+
+	cout
+
+		<< "--------------------------------------------------------------------------------------------\n"
+
+		<< setw(5) << "№" << setw(20) << "От кого"
+
+		<< setw(20) << "Кому" << setw(20) << "Дата"
+
+		<< setw(10) << "Время" << setw(15) << "Длительность\n"
+
+		<< "--------------------------------------------------------------------------------------------\n";
+
+	for (unsigned int i = 0; i < records.size(); i++)
+
+	{
+
+		Record it = records[i];
+
+
+
+		if (it.from == from)
+
+		{
+
+			flag = false;
+
+			cout
+
+				<< setw(5) << i + 1 << setw(20) << it.from
+
+				<< setw(20) << it.to << setw(20) << it.date
+
+				<< setw(10) << it.time << setw(15) << it.duration << endl;
+
+		}
+
+	}
+
+
+
+	if (flag)
+
+		cout << "Таких данных нет!\n";
+
+
+
+	cout << "--------------------------------------------------------------------------------------------\n";
+
+
+
+	return 0;
+
+}
+
+
+
+
+
+// Вывод вектора структур с совпадением по полю "Кому".
+
+int printRecordsTo(string fname)
+
+{
+
+	vector<Record> records = readFromFile(fname);
+
+
+
+	string to;
+
+	cout << "Кому: ";
+
+	cin >> to;
+
+
+
+	bool flag = true;
+
+
+
+	cout
+
+		<< "--------------------------------------------------------------------------------------------\n"
+
+		<< setw(5) << "№" << setw(20) << "От кого"
+
+		<< setw(20) << "Кому" << setw(20) << "Дата"
+
+		<< setw(10) << "Время" << setw(15) << "Длительность\n"
+
+		<< "--------------------------------------------------------------------------------------------\n";
+
+	for (unsigned int i = 0; i < records.size(); i++)
+
+	{
+
+		Record it = records[i];
+
+
+
+		if (it.to == to)
+
+		{
+
+			flag = false;
+
+			cout << setw(5) << i + 1 << setw(20) << it.from
+
+				<< setw(20) << it.to << setw(20) << it.date
+
+				<< setw(10) << it.time << setw(15) << it.duration << endl;
+
+		}
+
+	}
+
+
+
+	if (flag)
+
+		cout << "Таких данных нет!\n";
+
+
+
+	cout << "--------------------------------------------------------------------------------------------\n";
+
+
+
+	return 0;
+
+}
+
+
+
+
+
+// Функция ввода структуры.
+
+Record inputRecord()
+
+{
+
+	Record r;
+
+
+
+	cout << "От кого: ";
+
+	cin >> r.from;
+
+	cout << "Кому: ";
+
+	cin >> r.to;
+
+	cout << "Дата: ";
+
+	cin >> r.date;
+
+	cout << "Время: ";
+
+	cin >> r.time;
+
+	cout << "Длительность: ";
+
+	cin >> r.duration;
+
+
+
+	return r;
+
+}
+
+
+
+
+
+// Функция добавления структуры в файл.
+
+int addRecord(string fname)
+
+{
+
+	vector<Record> records = readFromFile(fname);
+
+	records.push_back(inputRecord());
+
+	writeToFile(records, fname);
+
+	cout << "Запись добавлена в файл!\n";
+
+
+
+	printRecords(records);
+
+
+
+	return 0;
+
+}
+
+
+
+// Функция удаления структуры из файла.
+
+int eraseRecord(string fname)
+
+{
+
+	vector<Record> records = readFromFile(fname);
+
+	unsigned int i;
+
+	printRecords(records);
+
+	cout << "Номер записи для удаления ->";
+
+	cin >> i;
+
+
+
+	if (i > records.size() || i <= 0)
+
+	{
+
+		cout << "Неверный номер записи! Удаление невозможно!\n";
+
+		return -1;
+
+	}
+
+
+
+	records.erase(records.begin() + i - 1);
+
+	writeToFile(records, fname);
+
+	printRecords(records);
+
+	cout << "Запись удалена из файла!\n";
+
+
+
+	return 0;
+
+}
+
+
+
+
+
+
+
+
+
+// Функция сравнения структур по полям "Дата" и "Время".
+
+bool compareDateTime(Record r1, Record r2)
+
+{
+
+	if (r1.date != r2.date)
+
+		return (r1.date < r2.date);
+
+		
+
+	return (r1.time < r2.time);
+
+}
+
+
+
+
+
+// Функция сравнения структур по полю "Длительность".
+
+bool compareDuration(Record r1, Record r2)
+
+{
+
+	return (r1.duration < r2.duration);
+
+}
+
+
+
+
+
+// Функция сортировки вектора структр по давности (дата, потом время).
+
+int sortDateTime(string fname)
+
+{
+
+	vector<Record> records = readFromFile(fname);
+
+	sort(records.begin(), records.end(), compareDateTime);
+
+
+
+	writeToFile(records, fname);
+
+	cout << "Сортировка произведена!\n";
+
+
+
+	printRecords(records);
+
+
+
+	return 0;
+
+}
+
+
+
+
+
+// Функция сортировки вектора структур по длительности.
+
+int sortDuration(string fname)
+
+{
+
+	vector<Record> records = readFromFile(fname);
+
+	sort(records.begin(), records.end(), compareDuration);
+
+
+
+	writeToFile(records, fname);
+
+	cout << "Сортировка произведена!\n";
+
+
+
+	printRecords(records);
+
+
+
+	return 0;
+
+}
+
+
+
+
+
+// Функция проверки существования файла.
+
+int checkFileExist(string fname)
+
+{
+
+	ifstream file;
+
+	file.open(fname.c_str());
+
+
+
+	if (!file)
+
+		return -1;
+
+	else
+
+		return 0;
+
+}
+
+
+
+
+
+int main(int argc, char** argv)
+
+{
+
+	SetConsoleCP(1251);
+
+	SetConsoleOutputCP(1251);
+
+
+
+	// Имя файла по умолчанию.
+
+	string fname = "myList.dat";
+
+	
+
+	int c;
+
+	while (true)
+
+	{
+
+		// Вывод меню.
+
+		cout << "1) Изменить имя файла [Файл: " << fname << "]\n"
+
+			    "2) Вывод полного списка\n"
+
+			    "3) Добавить запись\n"
+
+			    "4) Удалить запись по номеру\n"
+
+				"5) Вывод с даты по дату\n"
+
+				"6) Сортировка по давности\n"
+
+				"7) Сортировка по длительности\n"
+
+				"8) Вывод от конкретного человека\n"
+
+				"9) Вывод к конкретному человеку\n"
+
+				"0) Выход\n";
+
+
+
+
+
+		cout << "->";
+
+		cin >> c;
+
+
+
+		// Выбор пункта меню.
+
+		switch (c)
+
+		{
+
+		case 1:
+
+			cout << "Путь к файлу ->";
+
+			cin >> fname;
+
+
+
+			if (checkFileExist(fname) == -1)
+
+				cerr << "\nНевозможно найти файл: " << fname << endl;
+
+			break;
+
+
+
+		case 2:
+
+			printRecords(readFromFile(fname));
+
+			break;
+
+
+
+		case 3:
+
+			addRecord(fname);
+
+			break;
+
+
+
+		case 4:
+
+			eraseRecord(fname);
+
+			break;
+
+
+
+		case 5:
+
+			printRecordsDate(readFromFile(fname));
+
+			break;
+
+
+
+		case 6:
+
+			sortDateTime(fname);
+
+			break;
+
+
+
+		case 7:
+
+			sortDuration(fname);
+
+			break;
+
+		case 8:
+
+			printRecordsFrom(fname);
+
+			break;
+
+
+
+		case 9:
+
+			printRecordsTo(fname);
+
+			break;
+
+
+
+		case 0: default:
+
+			return 0;
+
+		}
+
+	}
+
+
+
+	return -2;
+
+}
